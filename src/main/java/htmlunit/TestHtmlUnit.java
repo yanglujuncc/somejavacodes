@@ -47,6 +47,7 @@ public class TestHtmlUnit {
 	public static void main2(String[] args) throws Exception {  
 	    String url = "http://www.google.com.hk";  
 	  
+	    //
 	    final WebClient webClient = new WebClient();  
 	    HtmlPage htmlPage = webClient.getPage(url);  
 	  
