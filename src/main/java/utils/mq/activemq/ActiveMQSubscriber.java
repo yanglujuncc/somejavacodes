@@ -1,4 +1,4 @@
-package util.acticemq;
+package utils.mq.activemq;
 
 
 import javax.jms.Connection;
@@ -15,9 +15,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-public class MQSubscriber {
+public class ActiveMQSubscriber {
 
-	private static Logger logger = Logger.getLogger(MQSubscriber.class.getName());
+	private static Logger logger = Logger.getLogger(ActiveMQSubscriber.class.getName());
 
 	ConnectionFactory connectionFactory;
 	Connection connection;
@@ -28,21 +28,44 @@ public class MQSubscriber {
 	
 	public int consumeCounter=0;
 	
-	public void init(String url, String topicName) throws JMSException {
+	
+	String url;
+	String topicName;
+	
+	public synchronized void init(String url, String topicName) throws JMSException {
 
+		this.url=url;
+		this.topicName=topicName;
+		
 		connectionFactory = new ActiveMQConnectionFactory(url);
 		connection = connectionFactory.createConnection();
 		connection.start();
-
-		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-		
-	
+		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);			
 		dest = session.createTopic(topicName);	
 		consumer=session.createConsumer(dest);
 	
 
 	}
-	public Message consume() throws JMSException {
+	
+	 public synchronized void reConnect() throws JMSException{
+		
+		try {
+			close() ;
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		connectionFactory = new ActiveMQConnectionFactory(url);
+		connection = connectionFactory.createConnection();
+		connection.start();
+		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);			
+		dest = session.createTopic(topicName);	
+		consumer=session.createConsumer(dest);
+	
+	}
+	
+	public synchronized Message  consume() throws JMSException {
 		
 		Message message = consumer.receive();
 	
@@ -50,38 +73,13 @@ public class MQSubscriber {
 		return message;
 	
 	}
-	public void consumeLoop(MessageHandler messageHandler, long maxWait) {
+	
 
-		while (true) {
-			try {
-
-				Message message = consumer.receive(maxWait);
-				// logger.info("consume :"+counter);
-
-				if (message != null) {
-
-					messageHandler.handleMessage(message);
-					consumeCounter++;
-
-				} else {
-
-					logger.info("receive noting, maxWait :" + maxWait + "'ms");
-				//	messageHandler.handleMessage(null);
-				}
-
-			} catch (JMSException e) {
-
-				e.printStackTrace();
-				System.exit(1);
-			}
-		}
-
-	}
-
-	public void close() throws JMSException {
+	public synchronized void close() throws JMSException {
 		consumer.close();
 		session.close();
 		connection.close();
+		
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -98,7 +96,7 @@ public class MQSubscriber {
 		String activeMQURL = "tcp://app-127.photo.163.org:61616";
 		String channelName = "MobileClickModelSnapshot";
 		
-		MQSubscriber subscriber = new MQSubscriber();
+		ActiveMQSubscriber subscriber = new ActiveMQSubscriber();
 	
 		int minThreadNum=2;
 		int maxThreadNum=4;
@@ -113,7 +111,7 @@ public class MQSubscriber {
 		Thread.sleep(10000);
 		
 		
-		subscriber.consumeLoop(simpleMessageHandler, 5000);
+	//	subscriber.consumeLoop(simpleMessageHandler, 5000);
 		
 		subscriber.close();
 		// messageConsum();

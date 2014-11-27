@@ -1,28 +1,21 @@
-package util.acticemq;
+package utils.mq.activemq;
 
-
-import java.util.Date;
 
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 
-public class MQPublisher {
+public class ActiveMQPublisher {
 
-	private static Logger logger = Logger.getLogger(MQPublisher.class.getName());
+	private static Logger logger = Logger.getLogger(ActiveMQPublisher.class.getName());
 
 	ConnectionFactory connectionFactory;
 	Connection connection;
@@ -83,7 +76,7 @@ public class MQPublisher {
 		String activeMQURL = "tcp://app-127.photo.163.org:61616";
 		String channelName = "MobileClickModelSnapshot";
 		
-		MQPublisher publisher = new MQPublisher();
+		ActiveMQPublisher publisher = new ActiveMQPublisher();
 	
 		int minThreadNum=2;
 		int maxThreadNum=4;

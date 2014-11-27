@@ -28,7 +28,7 @@ public class TestActiveMQ {
 		public void onMessage(Message msg) {
 			MapMessage message = (MapMessage)  msg;
 			try {
-				System.out.println(Thread.currentThread().getName()+" �յ���Ϣ��" + new Date(message.getLong("count")));
+				System.out.println(Thread.currentThread().getName()+" xx " + new Date(message.getLong("count")));
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

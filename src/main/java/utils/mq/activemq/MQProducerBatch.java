@@ -1,4 +1,4 @@
-package util.acticemq;
+package utils.mq.activemq;
 
 
 import javax.jms.Connection;
@@ -14,9 +14,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-public class MQProducer {
+public class MQProducerBatch {
 
-	private static Logger logger = Logger.getLogger(MQProducer.class.getName());
+	private static Logger logger = Logger.getLogger(MQProducerBatch.class.getName());
 
 	ConnectionFactory connectionFactory;
 	Connection connection;
@@ -75,10 +75,10 @@ public class MQProducer {
 	//	String channelName="QNLogQueue2"+"";
 		
 		
-		String activeMQURL = "tcp://app-127.photo.163.org:61616";
+		String activeMQURL = "tcp://bje2b11.space.163.org:61616";
 		String channelName = "MobileClickQueue";
 		
-		MQProducer producer = new MQProducer();
+		MQProducerBatch producer = new MQProducerBatch();
 	
 		int minThreadNum=2;
 		int maxThreadNum=4;

@@ -1,4 +1,4 @@
-package util.acticemq;
+package utils.mq.activemq;
 
 
 
@@ -11,7 +11,7 @@ import javax.jms.TextMessage;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-public class SimpleMessageHandler implements MessageHandler{
+public class SimpleMessageHandler implements ActiveMQMsgHandler{
 
 	private static Logger logger = Logger.getLogger(SimpleMessageHandler.class.getName());
 

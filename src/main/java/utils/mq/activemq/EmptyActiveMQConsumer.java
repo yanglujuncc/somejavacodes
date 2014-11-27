@@ -1,4 +1,4 @@
-package util.acticemq;
+package utils.mq.activemq;
 
 
 import javax.jms.Message;
@@ -6,10 +6,12 @@ import javax.jms.Message;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-public class EmptyMQConsumer {
-	private static Logger logger = Logger.getLogger(EmptyMQConsumer.class.getName());
+import utils.PIDUtil;
 
-	public static class EmptyMessageHandler implements MessageHandler {
+public class EmptyActiveMQConsumer {
+	private static Logger logger = Logger.getLogger(EmptyActiveMQConsumer.class.getName());
+
+	public static class EmptyMessageHandler implements ActiveMQMsgHandler {
 
 		private static Logger logger = Logger.getLogger(EmptyMessageHandler.class.getName());
 
@@ -65,18 +67,18 @@ public class EmptyMQConsumer {
 		String activeMQURL = args[0];
 		String channelName = args[1];
 
-		// String activeMQURL = "tcp://bje2b11.space.163.org:61616";
-		// String channelName = "MobileClickQueue";
+		// String activeMQURL = "tcp://newsrec1.photo.163.org:10021";
+		// String channelName = "Test";
 		logger.info("  activeMQURL:" + activeMQURL);
 		logger.info("  channelName:" + channelName);
 
-		MQConsumer consumer = new MQConsumer();
+		ActiveMQConsumeRunner	mqConsumeRunner = new ActiveMQConsumeRunner(new EmptyMessageHandler(), 60000, activeMQURL, channelName);
+		Thread	consumeThread = new Thread(mqConsumeRunner);
+		consumeThread.start();
+		
+		PIDUtil.createPidFile("pid");
 
-		consumer.init(activeMQURL, channelName);
-		EmptyMessageHandler emptyMessageHandler = new EmptyMessageHandler();
-		consumer.consumeLoop(emptyMessageHandler, 5000);
-		consumer.close();
-
+		
 	}
 
 }
