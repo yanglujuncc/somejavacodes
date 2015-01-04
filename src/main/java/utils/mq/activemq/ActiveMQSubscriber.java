@@ -1,13 +1,14 @@
 package utils.mq.activemq;
 
 
+import java.util.Enumeration;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
@@ -32,6 +33,18 @@ public class ActiveMQSubscriber {
 	String url;
 	String topicName;
 	
+	
+	public synchronized void init(String userName, String password,String url, String topicName)throws JMSException{
+		this.url=url;
+		this.topicName=topicName;
+		
+		connectionFactory = new ActiveMQConnectionFactory(userName,password,url);
+		connection = connectionFactory.createConnection();
+		connection.start();
+		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);			
+		dest = session.createTopic(topicName);	
+		consumer=session.createConsumer(dest);
+	}
 	public synchronized void init(String url, String topicName) throws JMSException {
 
 		this.url=url;
@@ -92,9 +105,21 @@ public class ActiveMQSubscriber {
 		//String activeMQURL ="tcp://localhost:61616";
 	//	String channelName="QNLogQueue2"+"";
 		
+		/*
+		 * 地址url： tcp://study55.server.163.org:61616?jms.useAsyncSend=true
+
+用户名：study_recommend
+密码：study_76354
+
+订阅Topic: VirtualTopic.NewLog
+		 */
 		
-		String activeMQURL = "tcp://app-127.photo.163.org:61616";
-		String channelName = "MobileClickModelSnapshot";
+		String activeMQURL = "tcp://study55.server.163.org:61616?jms.useAsyncSend=true";
+		String channelName = "VirtualTopic.NewLog";
+		String userName="study_recommend";
+		String passwd="study_76354";
+		//String activeMQURL = "tcp://app-127.photo.163.org:61616";
+		//String channelName = "MobileClickModelSnapshot";
 		
 		ActiveMQSubscriber subscriber = new ActiveMQSubscriber();
 	
@@ -103,17 +128,35 @@ public class ActiveMQSubscriber {
 		int taskQueueSize=100;
 		
 		
-		subscriber.init(activeMQURL, channelName);
-		SimpleMessageHandler simpleMessageHandler = new SimpleMessageHandler();
+		subscriber.init(userName,passwd,activeMQURL, channelName);
+		
+		while(true){
+			
+			System.out.println("waiting msg...");
+			Message msg=subscriber.consume();
+			
+			
+		//	System.out.println("got msg... ,  JMSType:"+msg.getClass().getName());
+			if(msg instanceof TextMessage){
+				TextMessage textMsg=(TextMessage)msg;
+				String jsontext= textMsg.getStringProperty("jsontext");
+				System.out.println(jsontext);
+			}else{
+				System.out.println("not TextMessage");
+			}
+			
+		}
+	
+		//SimpleMessageHandler simpleMessageHandler = new SimpleMessageHandler();
 		//MutiThreadMessageHandlerWarper mutiThreadMessageHandlerWarper=new MutiThreadMessageHandlerWarper(minThreadNum,maxThreadNum,taskQueueSize,simpleMessageHandler);
 		
 		
-		Thread.sleep(10000);
+		//Thread.sleep(10000);
 		
 		
 	//	subscriber.consumeLoop(simpleMessageHandler, 5000);
 		
-		subscriber.close();
+	//	subscriber.close();
 		// messageConsum();
 		// String channelName="my-topick";
 		// new Thread(new subRunable()).start();

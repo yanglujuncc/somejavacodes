@@ -1,4 +1,4 @@
-package JavaConcurrent_Future;
+package concurrent;
 
 
 

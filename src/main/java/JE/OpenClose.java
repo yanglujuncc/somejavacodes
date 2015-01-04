@@ -35,7 +35,7 @@ public class OpenClose {
             DatabaseConfig dbConfig = new DatabaseConfig();
             dbConfig.setAllowCreate(true);
             
-            dbConfig.set
+          
 			try {
 				myDatabase = myEnvironment.openDatabase(null, "myDB", dbConfig);
 
